@@ -2,6 +2,30 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db'); // Adaptez le chemin vers votre connexion MySQL (ex: ../db ou ../config/database)
 
+// 0. Liste de toutes les pharmacies
+// GET /api/pharmacies
+router.get('/', async (req, res) => {
+  try {
+    const [rows] = await db.execute(
+      `
+      SELECT
+        id,
+        nom,
+        adresse,
+        latitude,
+        longitude
+      FROM pharmacies
+      ORDER BY nom ASC
+      `
+    );
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Erreur GET /api/pharmacies :', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // 1. Recherche des pharmacies à proximité (appelée par App.jsx)
 // GET /api/pharmacies/search?lat=...&lng=...
 router.get('/search', async (req, res) => {
